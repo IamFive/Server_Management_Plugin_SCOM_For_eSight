@@ -26,6 +26,7 @@ namespace Huawei.SCOM.ESightPlugin.WebServer.Helper
     using Huawei.SCOM.ESightPlugin.RESTeSightLib;
     using Huawei.SCOM.ESightPlugin.RESTeSightLib.Exceptions;
     using Huawei.SCOM.ESightPlugin.RESTeSightLib.Helper;
+    using Huawei.SCOM.ESightPlugin.ViewLib.Utils;
     using Huawei.SCOM.ESightPlugin.WebServer.Model;
 
     using LogUtil;
@@ -194,7 +195,7 @@ namespace Huawei.SCOM.ESightPlugin.WebServer.Helper
                 model.SubscripeNeDeviceError = string.Empty;
                 model.LatestStatus = ConstMgr.ESightConnectStatus.NONE;
                 model.LatestConnectInfo = string.Empty;
-                var encryptPwd = EncryptUtil.EncryptPwd(model.LoginPd);
+                var encryptPwd = RijndaelManagedCrypto.Instance.EncryptForCS(model.LoginPd);
                 model.LoginPd = encryptPwd;
 
                 #endregion
@@ -262,7 +263,7 @@ namespace Huawei.SCOM.ESightPlugin.WebServer.Helper
                 eSight.LatestConnectInfo = string.Empty;
                 eSight.LastModifyTime = DateTime.Now;
 
-                var encryptPwd = EncryptUtil.EncryptPwd(model.LoginPd);
+                var encryptPwd = RijndaelManagedCrypto.Instance.EncryptForCS(model.LoginPd);
                 eSight.LoginPd = encryptPwd;
                 var oldSystemId = eSight.SystemID;
                 var isChangeSystemId = oldSystemId != model.SystemID;
@@ -410,7 +411,7 @@ namespace Huawei.SCOM.ESightPlugin.WebServer.Helper
                 HWLogger.UI.Info("Testing eSight connect..., the param is [{0}]", HidePd(json));
 
                 var LoginPd = eSight.LoginPd;
-                eSight.LoginPd = EncryptUtil.EncryptPwd(LoginPd);
+                eSight.LoginPd = RijndaelManagedCrypto.Instance.EncryptForCS(LoginPd);
 
                 var testResult = ESightEngine.Instance.TestEsSession(eSight);
                 if (string.IsNullOrEmpty(testResult))

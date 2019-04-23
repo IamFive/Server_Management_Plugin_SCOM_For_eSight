@@ -51,7 +51,10 @@ namespace CommonUtil
                 {
                     lock (SyncObject)
                     {
-                        _singleton = new T();
+                        if (_singleton == null)
+                        {
+                            _singleton = new T();
+                        }
                     }
                 }
                 return _singleton;

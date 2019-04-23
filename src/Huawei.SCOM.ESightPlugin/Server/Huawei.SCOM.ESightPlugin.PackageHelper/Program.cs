@@ -447,6 +447,7 @@ namespace Huawei.SCOM.ESightPlugin.PackageHelper
                 MGroup.Instance.InstallMpb(Path.GetFullPath("..\\..\\..\\..\\..\\..\\..\\release\\MPFiles\\eSight.HighDensityServer.Library.mpb"));
                 MGroup.Instance.InstallMpb(Path.GetFullPath("..\\..\\..\\..\\..\\..\\..\\release\\MPFiles\\eSight.RackServer.Library.mpb"));
                 MGroup.Instance.InstallMpb(Path.GetFullPath("..\\..\\..\\..\\..\\..\\..\\release\\MPFiles\\eSight.KunLunServer.Library.mpb"));
+                MGroup.Instance.InstallMpb(Path.GetFullPath("..\\..\\..\\..\\..\\..\\..\\release\\MPFiles\\eSight.Dashboard.Library.mpb"));
 #else
                 OnLog("Start Install eSight.View.Library");
                 MGroup.Instance.InstallMpb(Path.GetFullPath($"{RunPath}\\..\\MPFiles\\eSight.View.Library.mpb"));
@@ -460,6 +461,8 @@ namespace Huawei.SCOM.ESightPlugin.PackageHelper
                 MGroup.Instance.InstallMpb(Path.GetFullPath($"{RunPath}\\..\\MPFiles\\eSight.RackServer.Library.mpb"));
                 OnLog("Start Install eSight.KunLunServer.Library");
                 MGroup.Instance.InstallMpb(Path.GetFullPath($"{RunPath}\\..\\MPFiles\\eSight.KunLunServer.Library.mpb"));
+                OnLog("Start Install eSight.Dashboard.Library");
+                MGroup.Instance.InstallMpb(Path.GetFullPath($"{RunPath}\\..\\MPFiles\\eSight.Dashboard.Library.mpb"));
 #endif
                 OnLog("Install eSight ManagementPacks Finish.");
             }
@@ -560,7 +563,7 @@ namespace Huawei.SCOM.ESightPlugin.PackageHelper
             try
             {
                 OnLog("Start delete eSight .");
-                ESightDal.Instance.DeleteDbFile();
+                // ESightDal.Instance.DeleteDbFile();
                 OnLog("eSight delete finish.");
             }
             catch (Exception ex)
@@ -721,6 +724,8 @@ namespace Huawei.SCOM.ESightPlugin.PackageHelper
             try
             {
                 OnLog("Start UnInstall eSight ManagementPacks");
+                OnLog("Start UnInstall eSight.Dashboard.Library");
+                MGroup.Instance.UnInstallMp("eSight.Dashboard.Library");
                 OnLog("Start UnInstall eSight.BladeServer.Library");
                 MGroup.Instance.UnInstallMp("eSight.BladeServer.Library");
                 OnLog("Start UnInstall eSight.HighDensityServer.Library");

@@ -93,6 +93,7 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.EnterpriseManagement.Core, Version=7.0.5000.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
     <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Newtonsoft.Json.8.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
@@ -136,6 +137,12 @@
     <ProjectReference Include="..\..\Model\Huawei.SCOM.ESightPlugin.Models\Huawei.SCOM.ESightPlugin.Models.csproj">
       <Project>{e8b06327-7335-4d9d-93a7-7b95c0d35979}</Project>
       <Name>Huawei.SCOM.ESightPlugin.Models</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\View\Huawei.SCOM.ESightPlugin.ViewLib\Huawei.SCOM.ESightPlugin.ViewLib.csproj">
+      <Project>{7CA4B7D8-ECAE-48D7-936D-1E896A85AC71}</Project>
+      <Name>Huawei.SCOM.ESightPlugin.ViewLib</Name>
+      <Private>True</Private>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

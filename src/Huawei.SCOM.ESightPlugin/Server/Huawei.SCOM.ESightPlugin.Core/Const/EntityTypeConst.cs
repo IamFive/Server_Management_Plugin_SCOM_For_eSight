@@ -220,7 +220,7 @@ namespace Huawei.SCOM.ESightPlugin.Core.Const
                 /// <summary>
                 /// The main name.
                 /// </summary>
-                public static string HighdensityName  => "ESight.HighdensityServer.Highdensity";
+                public static string HighdensityName => "ESight.HighdensityServer.Highdensity";
 
                 /// <summary>
                 /// The memory.

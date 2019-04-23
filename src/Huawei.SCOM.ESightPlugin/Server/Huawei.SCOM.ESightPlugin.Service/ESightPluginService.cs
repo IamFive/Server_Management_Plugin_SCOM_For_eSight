@@ -311,6 +311,11 @@ namespace Huawei.SCOM.ESightPlugin.Service
                 string path = $"{this.InstallPath}\\MPFiles\\eSight.KunLunServer.Library.mpb";
                 MGroup.Instance.InstallMpb(path);
             }
+            if (!MGroup.Instance.CheckIsInstallMp("eSight.Dashboard.Library"))
+            {
+                string path = $"{this.InstallPath}\\MPFiles\\eSight.Dashboard.Library.mpb";
+                MGroup.Instance.InstallMpb(path);
+            }
 #endif
         }
 

@@ -12,16 +12,45 @@ using Huawei.SCOM.ESightPlugin.LogUtil;
 namespace Huawei.SCOM.ESightPlugin.WebServer
 {
     using Huawei.SCOM.ESightPlugin.RESTeSightLib.Helper;
+    using Huawei.SCOM.ESightPlugin.WebServer.Scheduler;
+    using System.Web.Caching;
+    using System.Web.Hosting;
 
     public class Global : System.Web.HttpApplication
     {
-
+        private const string ApplianceOperationConsumerTriggerItem = "TriggerApplianceOperationConsumer";
 
         protected void Application_Start(object sender, EventArgs e)
         {
             NotifyClient.Instance.Init();
+
+            // use http cache strategy to trigger consumer task
+            TriggerApplianceOpeationConsumerTask(60);
         }
 
+        private void TriggerApplianceOpeationConsumerTask(int expireInSeconds)
+        {
+            var OnCacheRemove = new CacheItemRemovedCallback(OnCacheItemRemoved);
+            HttpRuntime.Cache.Insert(ApplianceOperationConsumerTriggerItem, expireInSeconds, null,
+                DateTime.Now.AddSeconds(expireInSeconds), Cache.NoSlidingExpiration,
+                CacheItemPriority.NotRemovable, OnCacheRemove);
+        }
+
+        public void OnCacheItemRemoved(string itemName, object v, CacheItemRemovedReason r)
+        {
+            if (itemName.Equals(ApplianceOperationConsumerTriggerItem))
+            {
+                try
+                {
+                    ESightApplianceOperationConsumer.Instance.Consume();
+                }
+                finally
+                {
+                    // re-trigger next consume task
+                    TriggerApplianceOpeationConsumerTask(60);
+                }
+            }
+        }
 
         protected void Session_Start(object sender, EventArgs e)
         {

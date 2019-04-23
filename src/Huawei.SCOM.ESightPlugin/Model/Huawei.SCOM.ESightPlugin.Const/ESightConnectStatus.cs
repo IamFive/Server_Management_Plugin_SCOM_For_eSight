@@ -24,25 +24,25 @@ namespace Huawei.SCOM.ESightPlugin.Const
         /// </summary>
         public class ESightConnectStatus : ConstBase
         {
-        /// <summary>
-        /// The lates t_ statu s_ disconnect.
-        /// </summary>
-        public const string DISCONNECT = "DISCONNECT";
+            /// <summary>
+            /// The lates t_ statu s_ disconnect.
+            /// </summary>
+            public const string DISCONNECT = "DISCONNECT";
 
-        /// <summary>
-        /// The lates t_ statu s_ failed.
-        /// </summary>
-        public const string FAILED = "Offline";
+            /// <summary>
+            /// The lates t_ statu s_ failed.
+            /// </summary>
+            public const string FAILED = "Offline";
 
-        /// <summary>
-        /// The lates t_ statu s_ none.
-        /// </summary>
-        public const string NONE = "Ready";
+            /// <summary>
+            /// The lates t_ statu s_ none.
+            /// </summary>
+            public const string NONE = "Ready";
 
-        /// <summary>
-        /// The lates t_ statu s_ online.
-        /// </summary>
-        public const string ONLINE = "Online";
-    }
+            /// <summary>
+            /// The lates t_ statu s_ online.
+            /// </summary>
+            public const string ONLINE = "Online";
+        }
     }
 }

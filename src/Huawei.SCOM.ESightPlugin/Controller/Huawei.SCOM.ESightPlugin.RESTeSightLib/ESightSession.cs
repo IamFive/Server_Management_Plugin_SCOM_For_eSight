@@ -32,6 +32,7 @@ namespace Huawei.SCOM.ESightPlugin.RESTeSightLib
     using Huawei.SCOM.ESightPlugin.Models.Server;
     using Huawei.SCOM.ESightPlugin.RESTeSightLib.Exceptions;
     using Huawei.SCOM.ESightPlugin.RESTeSightLib.Helper;
+    using Huawei.SCOM.ESightPlugin.ViewLib.Utils;
     using LogUtil;
 
     /// <summary>
@@ -194,7 +195,7 @@ namespace Huawei.SCOM.ESightPlugin.RESTeSightLib
                 var param = new
                 {
                     userid = this.ESight.LoginAccount,
-                    value = EncryptUtil.DecryptPwd(this.ESight.LoginPd),
+                    value = RijndaelManagedCrypto.Instance.DecryptFromCS(ESight.LoginPd),
                     localIp = SystemUtil.GetLocalhostIP()
                 };
                 var content = new StringContent(JsonUtil.SerializeObject(param), Encoding.UTF8, "application/json");
@@ -247,7 +248,7 @@ namespace Huawei.SCOM.ESightPlugin.RESTeSightLib
                 var param = new
                 {
                     userid = this.ESight.LoginAccount,
-                    value = EncryptUtil.DecryptPwd(this.ESight.LoginPd),
+                    value = RijndaelManagedCrypto.Instance.DecryptFromCS(this.ESight.LoginPd),
                     localIp = SystemUtil.GetLocalhostIP()
                 };
                 var content = new StringContent(JsonUtil.SerializeObject(param), Encoding.UTF8, "application/json");

@@ -183,7 +183,8 @@ xcopy /e /r /y "$(TargetDir)Huawei.SCOM.ESightPlugin.RESTeSightLib.dll" "$(Solut
 xcopy /e /r /y "$(TargetDir)libeay32.dll" "$(SolutionDir)..\..\Release\Configuration\"
 xcopy /e /r /y "$(TargetDir)Huawei.SCOM.ESightPlugin.LogUtil.dll" "$(SolutionDir)..\..\Release\Configuration\"
 xcopy /e /r /y "$(TargetDir)Newtonsoft.Json.dll" "$(SolutionDir)..\..\Release\Configuration\"
-xcopy /e /r /y "$(TargetDir)NLog.dll" "$(SolutionDir)..\..\Release\Configuration\"</PostBuildEvent>
+xcopy /e /r /y "$(TargetDir)NLog.dll" "$(SolutionDir)..\..\Release\Configuration\"
+xcopy /e /r /y "$(TargetDir)Huawei.SCOM.ESightPlugin.ViewLib.dll" "$(SolutionDir)..\..\Release\Configuration\"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
