@@ -11,6 +11,7 @@
     HorizontalContentAlignment="Stretch"
     VerticalContentAlignment="Stretch"
     Background="#FFFFFF"
+    Loaded="OnPageLoaded"
     mc:Ignorable="d">
 
     <UserControl.Resources>

@@ -17,6 +17,7 @@ using System.Windows.Shapes;
 using System.ComponentModel.Composition;
 using Huawei.SCOM.ESightPlugin.ViewLib.Repo;
 using Huawei.SCOM.ESightPlugin.ViewLib.Model;
+using System.Windows.Threading;
 
 namespace Huawei.SCOM.ESightPlugin.ViewLib
 {
@@ -78,8 +79,6 @@ namespace Huawei.SCOM.ESightPlugin.ViewLib
         private void OnGridLoaded(object sender, RoutedEventArgs e)
         {
             // ... Assign ItemsSource of DataGrid.
-            // grid = sender as DataGrid;
-            // OnSearchESight();
         }
 
 
@@ -159,6 +158,23 @@ namespace Huawei.SCOM.ESightPlugin.ViewLib
         {
             OnSearchESight();
         }
+
+
+        private void OnPageLoaded(object sender, RoutedEventArgs e)
+        {
+            // Start dispatcher timer
+            DispatcherTimer dispatcherTimer = new DispatcherTimer();
+            dispatcherTimer.Tick += new EventHandler(dispatcherTimer_Tick);
+            dispatcherTimer.Interval = new TimeSpan(0, 0, 60);
+            dispatcherTimer.Start();
+        }
+
+        //Refreshes grid data on timer tick
+        protected void dispatcherTimer_Tick(object sender, EventArgs e)
+        {
+            this.ESightApplianceRepo.LoadAll(LoadESightAppliancesCallback);
+        }
+
 
         public event PropertyChangedEventHandler PropertyChanged;
 
