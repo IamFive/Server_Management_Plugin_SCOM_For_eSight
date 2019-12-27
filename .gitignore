@@ -296,3 +296,5 @@ app.res
 /Lib/AgoraRtcEngineControl.dll
 /Lib/AgoraRTCEngine.dll
 *.asm
+build/NSIS-Unicode
+build/*.exe

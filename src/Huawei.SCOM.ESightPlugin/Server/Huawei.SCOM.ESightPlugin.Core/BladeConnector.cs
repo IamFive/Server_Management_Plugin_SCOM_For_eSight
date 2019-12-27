@@ -382,7 +382,7 @@ namespace Huawei.SCOM.ESightPlugin.Core
             }
             else
             {
-                this.InsertDetials(model);
+                this.InsertDetails(model);
             }
         }
 
@@ -390,7 +390,7 @@ namespace Huawei.SCOM.ESightPlugin.Core
         /// The insert detials.
         /// </summary>
         /// <param name="model">The model.</param>
-        private void InsertDetials(BladeServer model)
+        private void InsertDetails(BladeServer model)
         {
             try
             {
