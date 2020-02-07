@@ -66,7 +66,10 @@ namespace Huawei.SCOM.ESightPlugin.Core.Models
         /// <summary>
         /// EventId used as SCOM event-id
         /// </summary>
-        public string EventId { get => $"{(int)this.GetLevel()}{this.MantissaNumber}"; }
+        public string EventId 
+        {
+            get { return $"{(int)this.GetLevel()}{this.MantissaNumber}"; }
+        }
 
         /// <summary>
         /// Event source device type.
@@ -77,7 +80,13 @@ namespace Huawei.SCOM.ESightPlugin.Core.Models
         /// Gets or sets the dn.
         /// </summary>
         /// <value>The dn.</value>
-        public string DeviceId { get => $"{this.ESightIp}-{this.AlarmData.NeDN}"; }
+        public string DeviceId
+        {
+            get
+            {
+                return $"{this.ESightIp}-{this.AlarmData.NeDN}";
+            }
+        }
 
         /// <summary>
         /// Gets or sets the e sight ip.
@@ -89,45 +98,95 @@ namespace Huawei.SCOM.ESightPlugin.Core.Models
         /// 1-新增告警 2-清除告警 3-确认告警 4-反确认告警 5-变更告警 6-新增事件
         /// </summary>
         /// <value>The type of the opt.</value>
-        public int OptType { get => AlarmData.OptType; set => OptType = value; }
+        public int OptType
+        {
+            get
+            {
+                return AlarmData.OptType;
+            }
+
+            set
+            {
+                OptType = value;
+            }
+        }
 
         /// <summary>
         /// Gets the alarm data.
         /// </summary>
         /// <value>The alarm data.</value>
-        public AlarmData AlarmData { get; }
+        public AlarmData AlarmData 
+        { 
+            get; 
+        }
 
         /// <summary>
         /// Gets or sets the alarm sn.
         /// </summary>
         /// <value>The alarm sn.</value>
-        public int AlarmSn { get => this.AlarmData.AlarmSN; }
+        public int AlarmSn
+        {
+            get
+            {
+                return this.AlarmData.AlarmSN;
+            }
+        }
 
         /// <summary>
         /// Gets or sets the channel.
         /// </summary>
         /// <value>The channel.</value>
-        public string Channel { get => this.AlarmData.AlarmName; }
+        public string Channel
+        {
+            get
+            {
+                return this.AlarmData.AlarmName;
+            }
+        }
 
         /// <summary>
         /// 1-Error, 2-Warning, 4-Information, 8-Success Audit, 16-Failure Audit.
         /// </summary>
         /// <value>The level identifier.</value>
-        public EventLogEntryType LevelId { get => this.GetLevel(); }
+        public EventLogEntryType LevelId
+        {
+            get
+            {
+                return this.GetLevel();
+            }
+        }
 
         /// <summary>
         /// Gets or sets the logging computer.
         /// </summary>
         /// <value>The logging computer.</value>
-        public string LoggingComputer { get => this.ESightIp; }
+        public string LoggingComputer
+        {
+            get
+            {
+                return this.ESightIp;
+            }
+        }
 
         /// <summary>
         /// Gets or sets the message.
         /// </summary>
         /// <value>The message.</value>
-        public string Message { get => this.AlarmData.AlarmName; }
+        public string Message
+        {
+            get
+            {
+                return this.AlarmData.AlarmName;
+            }
+        }
 
-        public bool Cleared { get => this.AlarmData.Cleared; }
+        public bool Cleared
+        {
+            get
+            {
+                return this.AlarmData.Cleared;
+            }
+        }
 
         /// <summary>
         /// 0-information, 1-warning, 2-error
@@ -311,7 +370,8 @@ namespace Huawei.SCOM.ESightPlugin.Core.Models
 
         public string Description
         {
-            get {
+            get
+            {
                 var eventTimeString = TimeHelper.StampToDateTime(AlarmData.EventTime.ToString()).ToString();
                 return $@"Alert ""{AlarmData.AlarmName}"" was reported by ""{AlarmData.ObjectInstance}"" of {DeviceId}({AlarmData.NeType}) at {eventTimeString}.
 It's caused by ""{AlarmData.ProbableCauseStr ?? string.Empty}"" and the suggested repair action is ""{AlarmData.ProposedRepairActions ?? string.Empty}"".";
