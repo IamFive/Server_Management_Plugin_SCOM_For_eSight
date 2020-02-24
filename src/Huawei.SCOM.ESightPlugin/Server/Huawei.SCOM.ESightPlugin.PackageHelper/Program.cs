@@ -695,7 +695,7 @@ namespace Huawei.SCOM.ESightPlugin.PackageHelper
         /// </param>
         private static void OnLog(string data)
         {
-            HWLogger.Install.Info(data);
+            HWLogger.GetInstallLogger().Info(data);
         }
 
         /// <summary>
