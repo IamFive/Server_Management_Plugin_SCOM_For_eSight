@@ -1653,7 +1653,7 @@ namespace Huawei.SCOM.ESightPlugin.Core
             obj[propertys["Type"]].Value = model.RaidType;
             obj[propertys["DeviceInterface"]].Value = model.InterfaceType;
             obj[propertys["BBUType"]].Value = model.BbuType;
-            obj[propertys["BBUPresence"]].Value = "Present";
+            // obj[propertys["BBUPresence"]].Value = "Present";
 
             obj[this.DisplayNameField].Value = model.Name;
             return obj;
@@ -1884,7 +1884,7 @@ namespace Huawei.SCOM.ESightPlugin.Core
             oldObject[propertys["Type"]].Value = model.RaidType;
             oldObject[propertys["DeviceInterface"]].Value = model.InterfaceType;
             oldObject[propertys["BBUType"]].Value = model.BbuType;
-            oldObject[propertys["BBUPresence"]].Value = "Present";
+            // oldObject[propertys["BBUPresence"]].Value = "Present";
 
             oldObject[this.DisplayNameField].Value = model.Name;
         }
