@@ -352,7 +352,6 @@ namespace Huawei.SCOM.ESightPlugin.Service
             {
                 logger.Subscribe.Debug($"Start Subscribe KeepAlive On Polling");
                 var result = this.Session.SubscribeKeepAlive();
-                this.IsNeedKeepAlive = true;
                 var status = 0;
                 if (result.Code != 0)
                 {
@@ -392,7 +391,7 @@ namespace Huawei.SCOM.ESightPlugin.Service
             }
             catch (Exception e)
             {
-                logger.Subscribe.Error(e, $"nsubscribe keepalive messages from eSight `{this.ESightIp}` failed.");
+                logger.Subscribe.Error(e, $"Unsubscribe keepalive messages from eSight `{this.ESightIp}` failed.");
             }
 
         }
@@ -705,13 +704,14 @@ namespace Huawei.SCOM.ESightPlugin.Service
                 {
                     if (IsNeedKeepAlive)
                     {
+                        this.IsNeedKeepAlive = false;
                         #region Check
                         try
                         {
                             if ((DateTime.Now - this.LastAliveTime).TotalMinutes > 10)
                             {
                                 logger.Subscribe.Error($"[{this.ESightIp}]-keep Alive TimeOut.Will subcribe again.LastAliveTime:{this.LastAliveTime:yyyy-MM-dd HH:mm:ss}");
-                                this.IsNeedKeepAlive = false;
+                                
                                 // TODO(turnbig) what if failed here ...
                                 this.SubscribeAlarm();
                                 this.SubscribeDeviceChange();
@@ -722,6 +722,10 @@ namespace Huawei.SCOM.ESightPlugin.Service
                         {
                             logger.Subscribe.Error(e);
                             throw;
+                        } 
+                        finally
+                        {
+                            this.IsNeedKeepAlive = true;
                         }
                         #endregion
                     }

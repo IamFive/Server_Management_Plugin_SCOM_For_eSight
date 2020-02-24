@@ -373,11 +373,6 @@ namespace Huawei.SCOM.ESightPlugin.Service
                 currentPage++;
             }
 
-            // TODO(turnbig)
-            // 插入历史告警完成后调用订阅接口
-            this.Subscribe();
-
-
             // find all alerts that is still open in SCOM but not in esight ope
             alerts.ToList().ForEach(alert =>
             {
@@ -394,6 +389,10 @@ namespace Huawei.SCOM.ESightPlugin.Service
                     logger.Polling.Info($"[{alert.CustomField6}] Succeed closing SCOM alert when syncing open alarm task.");
                 }
             });
+
+            // TODO(turnbig)
+            // 插入历史告警完成后调用订阅接口
+            this.Subscribe();
         }
 
         private static Func<MonitoringAlert, bool> GetScomAlertSuppressionPredicator(AlarmData alarm)

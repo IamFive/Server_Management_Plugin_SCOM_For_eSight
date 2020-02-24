@@ -125,15 +125,16 @@ namespace Huawei.SCOM.ESightPlugin.Service
                 //不存在则新增
                 if (existESight == null)
                 {
-                    OnLog($"check: new eSight was added.{eSight.HostIP}");
+                    OnLog($"check: new eSight `{eSight.HostIP}` was added.");
                     this.RunNewESight(eSight);
                 }
                 else
                 {
-                    //账号密码有变化则立即触发轮询
-                    if (eSight.LoginAccount != existESight.LoginAccount || eSight.LoginPd != existESight.LoginPd)
+                    // 账号密码有变化则立即触发轮询
+                    if (eSight.LoginAccount != existESight.LoginAccount || eSight.LoginPd != existESight.LoginPd
+                        || eSight.SubscribeID != existESight.SubscribeID || eSight.HostPort != existESight.HostPort)
                     {
-                        OnLog($"check:eSight was changed.{eSight.HostIP}");
+                        OnLog($"check: eSight `{eSight.HostIP}` was updated.");
                         this.RunUpdateESight(eSight);
                     }
                 }
@@ -143,7 +144,7 @@ namespace Huawei.SCOM.ESightPlugin.Service
             {
                 if (eSightList.All(x => x.HostIP != existESight.HostIP))
                 {
-                    OnLog($"check:eSight was deleted.{existESight.HostIP}");
+                    OnLog($"check: eSight `{existESight.HostIP}` was deleted.");
                     this.RunDeleteESight(existESight.HostIP);
                 }
             }
