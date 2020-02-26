@@ -753,7 +753,8 @@ namespace Huawei.SCOM.ESightPlugin.Service
                     case 3: // 修改
                         var modifyServerType = instance.GetServerTypeByDn(dn);
                         instance.StartUpdateTask(dn, modifyServerType, 0);
-                        instance.SubmitNewDeviceEvent(nedeviceData.Data);
+                        // qianbiao.ng - removed event view
+                        // instance.SubmitNewDeviceEvent(nedeviceData.Data);
                         // instance.InsertDeviceChangeEvent(nedeviceData.Data, modifyServerType);
                         break;
                     default:
