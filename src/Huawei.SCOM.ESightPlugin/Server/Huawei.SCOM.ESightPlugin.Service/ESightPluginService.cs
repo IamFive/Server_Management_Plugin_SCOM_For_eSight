@@ -242,6 +242,7 @@ namespace Huawei.SCOM.ESightPlugin.Service
             {
                 var instance = this.FindInstance(esgith);
                 instance.Unsubscribe();
+                instance.Close();
             }
         }
 
@@ -627,9 +628,7 @@ namespace Huawei.SCOM.ESightPlugin.Service
             var syncInstance = this.SyncInstances.FirstOrDefault(y => y.ESightIp == eSightIp);
             if (syncInstance != null)
             {
-                syncInstance.UnSubscribeKeepAlive();
-                syncInstance.UnSubscribeAlarm();
-                syncInstance.UnSubscribeNeDevice();
+                syncInstance.Unsubscribe();
                 syncInstance.Close();
                 this.SyncInstances.Remove(syncInstance);
             }
@@ -699,6 +698,7 @@ namespace Huawei.SCOM.ESightPlugin.Service
                         var childDeviceId = $"{eSight.HostIP}-{dn}";
                         var parentDn = BladeConnector.Instance.GetSwitchParentDn(childDeviceId);
                         instance.StartUpdateTask(parentDn, ServerTypeEnum.Blade, alarmSn);
+                        instance.SubmitNewAlarm(alarmData.Data);
                         return;
                     }
                     instance.StartUpdateTask(alarmData.Data.NeDN, serverType, alarmSn);

@@ -268,7 +268,7 @@ namespace Huawei.SCOM.ESightPlugin.PackageHelper
             }
 
             // 卸载前先取消订阅
-            UnSubscribeAllESight();
+            // UnSubscribeAllESight();
 
             if (!keepESight)
             {
