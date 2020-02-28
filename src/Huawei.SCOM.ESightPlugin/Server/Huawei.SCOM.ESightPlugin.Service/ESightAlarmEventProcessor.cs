@@ -24,6 +24,7 @@ using Microsoft.EnterpriseManagement.Monitoring;
 using Huawei.SCOM.ESightPlugin.Models.Server;
 using System.Collections.ObjectModel;
 using static Huawei.SCOM.ESightPlugin.Const.ConstMgr;
+using System.Collections.Concurrent;
 
 namespace Huawei.SCOM.ESightPlugin.Service
 {
@@ -54,6 +55,16 @@ namespace Huawei.SCOM.ESightPlugin.Service
         /// The new alarm received handle
         /// </summary>
         private readonly AutoResetEvent receiveAlarmEvent = new AutoResetEvent(false);
+
+
+        private static int RateLimitQueueSize = 50;
+        private static TimeSpan RateLimitTimeSpan = TimeSpan.FromSeconds(60);
+
+
+        /// <summary>
+        /// Fixed size queue records latest n alarm processed time
+        /// </summary>
+        private FixedSizedQueue<ProcessedOn> processedOnQueue = new FixedSizedQueue<ProcessedOn>(RateLimitQueueSize);
 
 
         #region 启用插入事件的任务
@@ -99,8 +110,14 @@ namespace Huawei.SCOM.ESightPlugin.Service
                                 }
 
                                 // waiting for monitoring-object ready.
-                                WaitForDeviceMonitored(monitoringObject);
+                                var monitored = WaitForDeviceMonitored(monitoringObject);
+                                if (!monitored)
+                                {
+                                    continue;
+                                }
 
+                                var now = DateTime.Now;
+                                ProcessedOn previewNProcessedOn = null;
                                 if (eventObject.Cleared)
                                 {
                                     // Close SCOM alert
@@ -110,13 +127,25 @@ namespace Huawei.SCOM.ESightPlugin.Service
                                 {
                                     // Create New EventLog for new alarms, and generate SCOM alert through associated rule
                                     CreateNewEventLogForAlarm(eventObject);
+                                    previewNProcessedOn = processedOnQueue.Enqueue(new ProcessedOn(now));
                                 }
                                 else if (eventObject.OptType == 6)
                                 {
                                     // Create New EventLog for new events, and generate SCOM event through associated rule
                                     CreateNewEventLogForEvent(eventObject);
+                                    previewNProcessedOn = processedOnQueue.Enqueue(new ProcessedOn(now));
                                 }
 
+                                if (previewNProcessedOn != null)
+                                {
+                                    TimeSpan timeSpan = now - previewNProcessedOn.Timestamp;
+                                    if (timeSpan < RateLimitTimeSpan)
+                                    {
+                                        TimeSpan timeout = RateLimitTimeSpan - timeSpan;
+                                        logger.Polling.Info($"Alarm processing reach rate limit, {processedOnQueue.Size} alarms have been processed during time span {timeSpan}, will sleep {timeout} now.");
+                                        Thread.Sleep(timeout);
+                                    }
+                                }
                             }
                         }
                     }
@@ -125,7 +154,6 @@ namespace Huawei.SCOM.ESightPlugin.Service
 
             this.alarmProcessor.Start();
             logger.Polling.Info("Alarm processor starts successfully.");
-
         }
 
         private void CreateNewEventLogForEvent(EventData eventObject)
@@ -246,36 +274,53 @@ namespace Huawei.SCOM.ESightPlugin.Service
         /// Waiting for device object monitored.
         /// </summary>
         /// <param name="obj"></param>
-        public void WaitForDeviceMonitored(MonitoringDeviceObject obj)
+        public bool WaitForDeviceMonitored(MonitoringDeviceObject obj)
         {
             // When an object is first created, it's status is "not monitoring". 
             // The status will changed when Monitor run with a configed interval.
             MonitoringObject device = obj.Device;
-            if (device.StateLastModified == null || device.HealthState == HealthState.Uninitialized)
+
+            TimeSpan expectTimeLong = TimeSpan.FromMinutes(5);
+            TimeSpan maxWaitTimeLong = TimeSpan.FromMinutes(10);
+
+            while (device.StateLastModified == null || device.HealthState == HealthState.Uninitialized)
             {
                 this.logger.Polling.Info($"MonitoringObject({obj.DeviceId}) is not monitoring.");
                 this.logger.Polling.Info($"     Device added time is: {device.TimeAdded}.");
                 this.logger.Polling.Info($"     Device last modified time is: {device.LastModified}.");
                 this.logger.Polling.Info($"     Device state last modified time is: {device.StateLastModified}.");
+                logger.Polling.Info($"Current health state for device `{obj.DeviceId}` is {obj.Device.HealthState}");
 
                 // Do not know why RecalculateMonitoringState will stop Service, So, we just wait the monitor run automate.
                 // obj.Device.RecalculateMonitoringState();
                 var stateLastModified = device.StateLastModified.HasValue ? device.StateLastModified.Value : device.LastModified;
                 TimeSpan stateNotChangedTimeLong = DateTime.UtcNow - stateLastModified;
+
                 // the interval of monitor for our object is 5 minutes. So we will wait 5m.
-                TimeSpan expectTimeLong = TimeSpan.FromMinutes(5);
                 if (stateNotChangedTimeLong <= expectTimeLong)
                 {
+
                     Thread.Sleep(expectTimeLong - stateNotChangedTimeLong);
+                } 
+                else if (stateNotChangedTimeLong <= maxWaitTimeLong)
+                {
+                    Thread.Sleep(TimeSpan.FromSeconds(5));
+                }
+                else
+                {
+                    logger.Polling.Info($"Max waiting time for device's monitoring status excess, will skip current device for now.");
+                    return false;
                 }
 
                 obj.Reload();
                 logger.Polling.Info($"Current health state for device `{obj.DeviceId}` is {obj.Device.HealthState}");
             }
 
-            if (!device.IsAvailable)
+
+            /**
+            while (!device.IsAvailable)
             {
-                this.logger.Polling.Info($"MonitoringObject({obj.DeviceId}) is not avaiable.");
+                this.logger.Polling.Info($"MonitoringObject({obj.DeviceId}) is not monitoring.");
                 this.logger.Polling.Info($"     Device added time is: {device.TimeAdded}.");
                 this.logger.Polling.Info($"     Device last modified time is: {device.LastModified}.");
                 this.logger.Polling.Info($"     Device availability last modified time is: {device.AvailabilityLastModified}.");
@@ -283,7 +328,6 @@ namespace Huawei.SCOM.ESightPlugin.Service
                 var availableLastModified = device.AvailabilityLastModified.HasValue ? device.AvailabilityLastModified.Value : device.LastModified;
                 TimeSpan availableNotChangedTimeLong = DateTime.UtcNow - availableLastModified;
                 // the interval of monitor for our object is 5 minutes. So we will wait 5m.
-                TimeSpan expectTimeLong = TimeSpan.FromMinutes(5);
                 if (availableNotChangedTimeLong <= expectTimeLong)
                 {
                     Thread.Sleep(expectTimeLong - availableNotChangedTimeLong);
@@ -291,7 +335,9 @@ namespace Huawei.SCOM.ESightPlugin.Service
 
                 obj.Reload();
                 logger.Polling.Info($"Current health state for device `{obj.DeviceId}` is {obj.Device.HealthState}");
-            }
+            }*/
+
+            return true;
         }
 
         /// <summary>
@@ -449,5 +495,44 @@ namespace Huawei.SCOM.ESightPlugin.Service
                 logger.Polling.Info($"[{data.AlarmSN}] Alarm is ignored, event type is: {data.EventType}.");
             }
         }
+    }
+
+    class ProcessedOn
+    {
+        public DateTime Timestamp { get; set; }
+
+        public ProcessedOn(DateTime timestamp)
+        {
+            this.Timestamp = timestamp;
+        }
+
+    }
+
+    public class FixedSizedQueue<T> where T : class
+    {
+        ConcurrentQueue<T> q = new ConcurrentQueue<T>();
+        private object lockObj = new object();
+
+        public int Size { get; private set; }
+
+        public FixedSizedQueue(int size)
+        {
+            Size = size;
+        }
+
+        public T Enqueue(T obj)
+        {
+            q.Enqueue(obj);
+            T overflow = null;
+            lock (lockObj)
+            {
+                while (q.Count > Size)
+                {
+                    q.TryDequeue(out overflow);
+                }
+            }
+            return overflow;
+        }
+
     }
 }
