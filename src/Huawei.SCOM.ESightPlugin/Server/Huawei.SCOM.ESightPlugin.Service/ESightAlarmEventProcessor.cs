@@ -57,8 +57,8 @@ namespace Huawei.SCOM.ESightPlugin.Service
         private readonly AutoResetEvent receiveAlarmEvent = new AutoResetEvent(false);
 
 
-        private static int RateLimitQueueSize = 50;
-        private static TimeSpan RateLimitTimeSpan = TimeSpan.FromSeconds(60);
+        private static int RateLimitQueueSize = 7;
+        private static TimeSpan RateLimitTimeSpan = TimeSpan.FromSeconds(10);
 
 
         /// <summary>
@@ -110,11 +110,7 @@ namespace Huawei.SCOM.ESightPlugin.Service
                                 }
 
                                 // waiting for monitoring-object ready.
-                                var monitored = WaitForDeviceMonitored(monitoringObject);
-                                if (!monitored)
-                                {
-                                    continue;
-                                }
+                                WaitForDeviceMonitored(monitoringObject);
 
                                 var now = DateTime.Now;
                                 ProcessedOn previewNProcessedOn = null;
@@ -278,44 +274,44 @@ namespace Huawei.SCOM.ESightPlugin.Service
         {
             // When an object is first created, it's status is "not monitoring". 
             // The status will changed when Monitor run with a configed interval.
-            MonitoringObject device = obj.Device;
 
             TimeSpan expectTimeLong = TimeSpan.FromMinutes(5);
             TimeSpan maxWaitTimeLong = TimeSpan.FromMinutes(10);
 
-            while (device.StateLastModified == null || device.HealthState == HealthState.Uninitialized)
+            if (obj.Device.StateLastModified == null)
             {
-                this.logger.Polling.Info($"MonitoringObject({obj.DeviceId}) is not monitoring.");
-                this.logger.Polling.Info($"     Device added time is: {device.TimeAdded}.");
-                this.logger.Polling.Info($"     Device last modified time is: {device.LastModified}.");
-                this.logger.Polling.Info($"     Device state last modified time is: {device.StateLastModified}.");
-                logger.Polling.Info($"Current health state for device `{obj.DeviceId}` is {obj.Device.HealthState}");
-
-                // Do not know why RecalculateMonitoringState will stop Service, So, we just wait the monitor run automate.
-                // obj.Device.RecalculateMonitoringState();
-                var stateLastModified = device.StateLastModified.HasValue ? device.StateLastModified.Value : device.LastModified;
-                TimeSpan stateNotChangedTimeLong = DateTime.UtcNow - stateLastModified;
-
-                // the interval of monitor for our object is 5 minutes. So we will wait 5m.
-                if (stateNotChangedTimeLong <= expectTimeLong)
+                while (obj.Device.HealthState == HealthState.Uninitialized)
                 {
+                    this.logger.Polling.Info($"MonitoringObject({obj.DeviceId}) is not monitoring.");
+                    this.logger.Polling.Info($"     Device added time is: {obj.Device.TimeAdded}.");
+                    this.logger.Polling.Info($"     Device last modified time is: {obj.Device.LastModified}.");
+                    this.logger.Polling.Info($"     Device state last modified time is: {obj.Device.StateLastModified}.");
+                    logger.Polling.Info($"Current health state for device `{obj.DeviceId}` is {obj.Device.HealthState}");
 
-                    Thread.Sleep(expectTimeLong - stateNotChangedTimeLong);
-                } 
-                else if (stateNotChangedTimeLong <= maxWaitTimeLong)
-                {
-                    Thread.Sleep(TimeSpan.FromSeconds(5));
+                    // Do not know why RecalculateMonitoringState will stop Service, So, we just wait the monitor run automate.
+                    // obj.Device.RecalculateMonitoringState();
+                    var stateLastModified = obj.Device.StateLastModified ?? obj.Device.LastModified;
+                    TimeSpan stateNotChangedTimeLong = DateTime.UtcNow - stateLastModified;
+
+                    // the interval of monitor for our object is 5 minutes. So we will wait 5m.
+                    if (stateNotChangedTimeLong <= expectTimeLong)
+                    {
+                        Thread.Sleep(expectTimeLong - stateNotChangedTimeLong);
+                    }
+                    else if (stateNotChangedTimeLong <= maxWaitTimeLong)
+                    {
+                        Thread.Sleep(TimeSpan.FromSeconds(5));
+                    }
+                    else
+                    {
+                        logger.Polling.Info($"Max waiting time for device's monitoring status excess, will skip current device for now.");
+                        return false;
+                    }
+
+                    obj.Reload();
+                    logger.Polling.Info($"Current health state for device `{obj.DeviceId}` is {obj.Device.HealthState}");
                 }
-                else
-                {
-                    logger.Polling.Info($"Max waiting time for device's monitoring status excess, will skip current device for now.");
-                    return false;
-                }
-
-                obj.Reload();
-                logger.Polling.Info($"Current health state for device `{obj.DeviceId}` is {obj.Device.HealthState}");
             }
-
 
             /**
             while (!device.IsAvailable)
