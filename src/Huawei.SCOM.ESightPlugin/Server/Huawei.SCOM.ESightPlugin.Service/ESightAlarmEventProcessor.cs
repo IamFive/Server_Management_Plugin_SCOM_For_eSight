@@ -275,8 +275,8 @@ namespace Huawei.SCOM.ESightPlugin.Service
             // When an object is first created, it's status is "not monitoring". 
             // The status will changed when Monitor run with a configed interval.
 
-            TimeSpan expectTimeLong = TimeSpan.FromMinutes(5);
-            TimeSpan maxWaitTimeLong = TimeSpan.FromMinutes(10);
+            TimeSpan expectTimeLong = TimeSpan.FromMinutes(10);
+            TimeSpan maxWaitTimeLong = TimeSpan.FromMinutes(15);
 
             if (obj.Device.StateLastModified == null)
             {
