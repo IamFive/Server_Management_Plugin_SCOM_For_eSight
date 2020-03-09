@@ -135,7 +135,8 @@ namespace Huawei.SCOM.ESightPlugin.Service
                                 if (previewNProcessedOn != null)
                                 {
                                     TimeSpan timeSpan = now - previewNProcessedOn.Timestamp;
-                                    if (timeSpan < RateLimitTimeSpan)
+                                    // do not know why system time was changed to yestoday.
+                                    if (now >= previewNProcessedOn.Timestamp && timeSpan < RateLimitTimeSpan)
                                     {
                                         TimeSpan timeout = RateLimitTimeSpan - timeSpan;
                                         logger.Polling.Info($"Alarm processing reach rate limit, {processedOnQueue.Size} alarms have been processed during time span {timeSpan}, will sleep {timeout} now.");
