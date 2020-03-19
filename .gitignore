@@ -298,3 +298,5 @@ app.res
 *.asm
 build/NSIS-Unicode
 build/*.exe
+**/MPResources.resources
+
