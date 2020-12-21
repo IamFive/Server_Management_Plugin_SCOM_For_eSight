@@ -539,8 +539,16 @@ namespace Huawei.SCOM.ESightPlugin.RESTeSightLib
                 string urlAlarm = "rest/openapi/notification/common/nedevice";
                 string url = this.GetFullUrl(urlAlarm);
 
+                var secureParams = new
+                {
+                    systemID = HttpUtility.UrlEncode(this.ESight.SystemID),
+                    openID = "********",
+                    url = alramUrl,
+                    dataType = "JSON",
+                    desc = "ESightSCOM.ESightPlugin"
+                };
                 var paramJson = JsonUtil.SerializeObject(param);
-                logger.Api.Info($"SubscribeNeDevice url:{url} param: {paramJson}");
+                logger.Api.Info($"SubscribeNeDevice url:{url} param: {secureParams}");
 
                 this.CheckAndReLogin();
                 this.TrustCertificate();
