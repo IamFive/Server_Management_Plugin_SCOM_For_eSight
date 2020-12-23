@@ -81,11 +81,32 @@ namespace Huawei.SCOM.ESightPlugin.Models.Devices
         /// </summary>
         [JsonProperty(PropertyName = "mezzLocation")]
         public string MezzLocation { get; set; }
+
+
+        private string _mac;
+
         /// <summary>
         /// Mac地址
         /// </summary>
         [JsonProperty(PropertyName = "mezzMac")]
-        public string MezzMac { get; set; }
+        public string MezzMac { 
+            get {
+                List<String> macList = new List<String>();
+                string[] splited = _mac.Split(';');
+                foreach (string segment in splited)
+                {
+                    string[] pieces = segment.Split('#');
+                    if (pieces.Length == 2 && pieces[1].Length == 17)
+                    {
+                        macList.Add(pieces[1]);
+                    }
+                }
+                return String.Join(";", macList.ToArray());
+            }
+            set {
+                _mac = value;
+            }
+        }
         /// <summary>
         /// 索引
         /// </summary>
