@@ -374,12 +374,20 @@ namespace Huawei.SCOM.ESightPlugin.RESTeSightLib
                 string urlAlarm = "rest/openapi/notification/common/systemKeepAlive";
                 string url = this.GetFullUrl(urlAlarm);
 
-                var paramJson = JsonUtil.SerializeObject(param);
-                logger.Api.Info($"SubscribeKeepAlive url:{url} param: {paramJson}");
+                var sesitiveParam = new
+                {
+                    systemID = HttpUtility.UrlEncode(this.ESight.SystemID),
+                    openID = "******",
+                    url = alramUrl,
+                    dataType = "JSON",
+                    desc = "ESightSCOM.ESightPlugin"
+                };
+                logger.Api.Info($"SubscribeKeepAlive url:{url} param: {sesitiveParam}");
 
                 this.CheckAndReLogin();
                 this.TrustCertificate();
 
+                var paramJson = JsonUtil.SerializeObject(param);
                 var content = new StringContent(paramJson, Encoding.UTF8, "application/json");
                 var httpClient = new HttpClient();
                 httpClient.DefaultRequestHeaders.Add("openid", this.OpenId);
@@ -475,12 +483,20 @@ namespace Huawei.SCOM.ESightPlugin.RESTeSightLib
                 string urlAlarm = "rest/openapi/notification/common/alarm";
                 string url = this.GetFullUrl(urlAlarm);
 
-                var paramJson = JsonUtil.SerializeObject(param);
-                logger.Api.Info($"SubscribeAlarm url:{url} param: {paramJson}");
+                var sesitiveParam = new
+                {
+                    systemID = HttpUtility.UrlEncode(this.ESight.SystemID),
+                    openID = "******",
+                    url = alramUrl,
+                    dataType = "JSON",
+                    desc = "ESightSCOM.ESightPlugin"
+                };
+                logger.Api.Info($"SubscribeAlarm url:{url} param: {sesitiveParam}");
 
                 this.CheckAndReLogin();
                 this.TrustCertificate();
 
+                var paramJson = JsonUtil.SerializeObject(param);
                 var content = new StringContent(paramJson, Encoding.UTF8, "application/json");
                 var httpClient = new HttpClient();
                 httpClient.DefaultRequestHeaders.Add("openid", this.OpenId);
