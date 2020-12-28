@@ -35,30 +35,9 @@ namespace Huawei.SCOM.ESightPlugin.Models.Devices
         /// <summary>
         /// 健康状态（1：:正常；-2、5：未知;其他故障；PresentState为-2时健康状态是为未知）
         /// </summary>
-        public string MezzHealthStatus => StatusHelper.ConvertStatus(OriStatus);
+        public string MezzHealthStatus => StatusHelper.GroupMezzHealthStatus(OriStatus);
 
-        public string MezzHealthStatusTxt
-        {
-            get
-            {
-                if (MezzHealthStatus == "0" || MezzHealthStatus == "-3")
-                {
-                    return "OK";
-                }
-                else if (MezzHealthStatus == "-1")
-                {
-                    return "Warning";
-                }
-                else if (MezzHealthStatus == "-2")
-                {
-                    return "Critical";
-                }
-                else
-                {
-                    return MezzHealthStatus;
-                }
-            }
-        }
+        public string MezzHealthStatusTxt => StatusHelper.ConvertComponentHealthStatusToScomHealthStatus(this.MezzHealthStatus);
 
         private string _presentState { get; set; }
 

@@ -37,30 +37,13 @@ namespace Huawei.SCOM.ESightPlugin.Models.Devices
         ///	其他：故障
         /// </summary>
         [JsonProperty(PropertyName = "healthState")]
-        public string HealthState { get { return _healthState; }  set { _healthState = StatusHelper.ConvertStatus(value); } }
-
-        public string HealthStateTxt
-        {
-            get
-            {
-                if (HealthState == "0" || HealthState == "-3")
-                {
-                    return "OK";
-                }
-                else if (HealthState == "-1")
-                {
-                    return "Warning";
-                }
-                else if (HealthState == "-2")
-                {
-                    return "Critical";
-                }
-                else
-                {
-                    return HealthState;
-                }
-            }
+        public string HealthState { 
+            get { return _healthState; }  
+            set { _healthState = StatusHelper.GroupComponentHealthStatus(value); } 
         }
+
+        public string HealthStateTxt => StatusHelper.ConvertComponentHealthStatusToScomHealthStatus(this.HealthState);
+
 
         /// <summary>
         /// 主频，属性字符串直接显示，非枚举值

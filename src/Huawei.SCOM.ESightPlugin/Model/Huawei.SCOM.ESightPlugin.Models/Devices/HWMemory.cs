@@ -39,30 +39,9 @@ namespace Huawei.SCOM.ESightPlugin.Models.Devices
         ///	“-2”：未知
         ///	其他：故障
         /// </summary>
-        public string HealthState => StatusHelper.ConvertStatus(OriStatus);
+        public string HealthState => StatusHelper.GroupComponentHealthStatus(OriStatus);
 
-        public string HealthStateTxt
-        {
-            get
-            {
-                if (HealthState == "0" || HealthState == "-3")
-                {
-                    return "OK";
-                }
-                else if (HealthState == "-1")
-                {
-                    return "Warning";
-                }
-                else if (HealthState == "-2")
-                {
-                    return "Critical";
-                }
-                else
-                {
-                    return HealthState;
-                }
-            }
-        }
+        public string HealthStateTxt => StatusHelper.ConvertComponentHealthStatusToScomHealthStatus(this.HealthState);
 
         /// <summary>
         /// 容量，已经带有单位，属性字符串直接显示，非枚举值

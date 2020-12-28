@@ -8,7 +8,7 @@
 //MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 //MIT license for more detail.
 //*************************************************************************  
-﻿// --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="StatusHelper.cs" company="">
 //   
 // </copyright>
@@ -16,6 +16,8 @@
 //   The status helper.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
+
+using System;
 
 namespace Huawei.SCOM.ESightPlugin.Models
 {
@@ -26,31 +28,96 @@ namespace Huawei.SCOM.ESightPlugin.Models
     {
 
         /// <summary>
-        /// 20180625 统一健康状态
-        /// Success  0
-        /// Warnning  2 / 3 / 5
-        /// Critical  4 / 6 / 7 / 8
-        /// 与上次状态等级保持一致  -1 / -2 / Others
+        /// 0：正常
+        /// -1：离线
+        /// -2：未知
+        /// 其他：故障
         /// </summary>
         /// <param name="status">The status.</param>
-        /// <returns>The <see cref="string" />.</returns>
-        public static string ConvertStatus(string status)
+        /// <returns>0 if health, -2 if error, -3 if no update required.</returns>
+        public static string GroupComponentHealthStatus(string status)
         {
             switch (status)
             {
                 case "0":
                     return "0";
-                case "2":
-                case "3":
-                case "5":
-                    return "-1";
-                case "4":
-                case "6":
-                case "7":
-                case "8":
+                
+                case "-1":
+                case "-2": 
+                    return "-3"; // 返回-3 标识健康状态本次不做更新
+
+                default:
                     return "-2";
-                default://其他返回-3 标识健康状态本次不做更新
-                    return "-3";
+            }
+        }
+
+        /// <summary>
+        /// 0：正常
+        /// -2/5 ：未知
+        /// 其他：故障
+        /// </summary>
+        /// <param name="status">The status.</param>
+        /// <returns>0 if health, -2 if error, -3 if no update required.</returns>
+        public static string GroupMezzHealthStatus(string status)
+        {
+            switch (status)
+            {
+                case "0":
+                    return "0";
+
+                case "5":
+                case "-2":
+                    return "-3"; // 返回-3 标识健康状态本次不做更新
+
+                default:
+                    return "-2";
+            }
+        }
+
+        public static string ConvertComponentHealthStatusToScomHealthStatus(string groupedHealthStatus)
+        {
+            switch (groupedHealthStatus)
+            {
+                case "0":
+                    return "OK";
+
+                case "-2":
+                    return "Critical";
+
+                case "-3":   // should not be used
+                    return "Not changed";
+
+                default:
+                    throw new ArgumentException($"Do not know how to convert health status {groupedHealthStatus} to SCOM health status.");
+            }
+        }
+
+
+        /// <summary>
+        /// convert Device status to SCOM health status
+        /// 0：正常
+        /// -1：离线
+        /// -2：未知
+        /// 其他：故障
+        /// </summary>
+        /// <param name="status">The status.</param>
+        /// <returns>0 if health, -2 if error, -3 if no update required.</returns>
+
+        public static string ConvertDeviceStatusToScomHealthStatus(string status)
+        {
+            switch (status)
+            {
+                case "0":
+                    return "OK";
+
+                case "-1":
+                    return "Warning";
+
+                case "-2":
+                    return "Critical";
+
+                default:
+                    return "Critical";
             }
         }
 

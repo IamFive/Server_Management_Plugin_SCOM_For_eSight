@@ -91,7 +91,10 @@ namespace Huawei.SCOM.ESightPlugin.Models.Devices
         ///	其他：故障
         /// </summary>
         [JsonProperty(PropertyName = "healthState")]
-        public string HealthState { get { return _healthState; } set { _healthState = StatusHelper.ConvertStatus(value); } }
+        public string HealthState { 
+            get { return _healthState; } 
+            set { _healthState = StatusHelper.GroupComponentHealthStatus(value); } 
+        }
 
         /// <summary>
         /// 单板类型，含义如下：“0”：主板	“1”：交换板

@@ -84,7 +84,7 @@ namespace Huawei.SCOM.ESightPlugin.Models.Devices
         ///	“-2”：未知
         ///	其他：故障
         /// </summary>
-        public string Status => StatusHelper.ConvertStatus(OriStatus);
+        public string Status => StatusHelper.GroupComponentHealthStatus(OriStatus);
 
         private string _manufacturer;
         /// <summary>

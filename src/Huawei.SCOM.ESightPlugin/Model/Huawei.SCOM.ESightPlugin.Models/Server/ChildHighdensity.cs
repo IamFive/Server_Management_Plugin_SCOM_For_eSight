@@ -202,28 +202,7 @@ namespace Huawei.SCOM.ESightPlugin.Models.Server
         /// </summary>
         public string Status { get; set; }
 
-        public string StatusTxt
-        {
-            get
-            {
-                if (Status == "0" || Status == "-3")
-                {
-                    return "OK";
-                }
-                else if (Status == "-1")
-                {
-                    return "Warning";
-                }
-                else if (Status == "-2")
-                {
-                    return "Critical";
-                }
-                else
-                {
-                    return Status;
-                }
-            }
-        }
+        public string StatusTxt => StatusHelper.ConvertDeviceStatusToScomHealthStatus(this.Status);
 
         /// <summary>
         /// Gets or sets the type.

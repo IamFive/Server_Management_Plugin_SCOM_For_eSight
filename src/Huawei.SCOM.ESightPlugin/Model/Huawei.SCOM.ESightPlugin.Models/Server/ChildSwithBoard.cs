@@ -100,28 +100,7 @@ namespace Huawei.SCOM.ESightPlugin.Models.Server
         /// </summary>
         public string HealthState { get; set; }
 
-        public string HealthStateTxt
-        {
-            get
-            {
-                if (HealthState == "0" || HealthState == "-3")
-                {
-                    return "OK";
-                }
-                else if (HealthState == "-1")
-                {
-                    return "Warning";
-                }
-                else if (HealthState == "-2")
-                {
-                    return "Critical";
-                }
-                else
-                {
-                    return HealthState;
-                }
-            }
-        }
+        public string HealthStateTxt => StatusHelper.ConvertDeviceStatusToScomHealthStatus(this.HealthState);
 
         /// <summary>
         /// 单板类型，含义如下：“0”：主板	“1”：交换板
