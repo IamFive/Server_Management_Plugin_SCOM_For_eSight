@@ -928,8 +928,8 @@ namespace Huawei.SCOM.ESightPlugin.RESTeSightLib
         {
             // 默认忽略证书
             ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
-            // 兼容所有ssl协议
-            ServicePointManager.SecurityProtocol = (SecurityProtocolType)(MySecurityProtocolType.Tls12 | MySecurityProtocolType.Tls11 | MySecurityProtocolType.Tls | MySecurityProtocolType.Ssl3);
+            // 仅使用 TLS 1.2 
+            ServicePointManager.SecurityProtocol = (SecurityProtocolType) MySecurityProtocolType.Tls12;
             ServicePointManager.DefaultConnectionLimit = 1000;
         }
 
